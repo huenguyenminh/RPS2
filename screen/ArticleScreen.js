@@ -1,11 +1,12 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity,Image, SafeAreaView, StatusBar, FlatList} from 'react-native';
+import React, {useState} from 'react';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, TouchableHighlight, Image, SafeAreaView, StatusBar, FlatList} from 'react-native';
 import { formatDistanceToNow, parseISO} from 'date-fns'
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import * as PusherConst from '../Components/RpsComponents/Config';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 
 
 const ArticleScreen = ({ navigation }) => {
@@ -23,9 +24,15 @@ const ArticleScreen = ({ navigation }) => {
     {id: '11', title: 'Suspect Stalked French School Before Beheading Teacher, Officials Say', lead: 'President Trump has called Joe Biden a tool of leftist agitators. Friends say that has never much been his way, even as a young man surrounded by protest.', imgLink: 'https://static01.nyt.com/images/2020/09/18/us/politics/00young-biden/00young-biden-threeByTwoLargeAt2X.jpg?quality=75&auto=webp&disable=upscale&width=600', publicDate:'2020-06-18'},
     {id: '12', title: 'Man Sentenced to Life Over Theft of Hedge Clippers Is Granted Parole', lead: 'President Trump has called Joe Biden a tool of leftist agitators. Friends say that has never much been his way, even as a young man surrounded by protest.', imgLink: 'https://static01.nyt.com/images/2020/09/18/us/politics/00young-biden/00young-biden-threeByTwoLargeAt2X.jpg?quality=75&auto=webp&disable=upscale&width=600', publicDate:'2020-06-18'},
   ];
+  const [modalVisible, setModalVisible] = useState(false);
+
   const renderItem = ({ item }) => (
     <View key={item.id} style={styles.article}>
-      <TouchableOpacity style={styles.articleTouch}>
+      <TouchableOpacity 
+        onPress={() => {
+          setModalVisible(true);
+        }}
+        style={styles.articleTouch}>
           <Image 
             style={styles.Img} 
             source={{uri: item.imgLink,}} />
@@ -49,6 +56,33 @@ const ArticleScreen = ({ navigation }) => {
               />
           
         </View>
+        {/* Modal */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+          }}
+        >
+          <SafeAreaView>
+            <View style={styles.fullView}>
+              <View style={styles.modalView}>
+                <Text style={styles.modalText}>Hello World!</Text>
+
+                <TouchableHighlight
+                  style={styles.closeButton}
+                  onPress={() => {
+                    setModalVisible(!modalVisible);
+                  }}
+                >
+                  {/* <FontAwesome5Icon name="times" size={30}/> */}
+                  <Text style={styles.textStyle}>X</Text>
+                </TouchableHighlight>
+              </View>
+            </View>
+          </SafeAreaView>
+           </Modal>
       </SafeAreaView>
     </>
     
@@ -70,6 +104,7 @@ const styles = StyleSheet.create({
   article: {
     marginBottom: 15,
     width: '100%',
+    
   },
   articleTouch: {
     width: '100%',
@@ -83,11 +118,18 @@ const styles = StyleSheet.create({
   },
   articleInfo: {
     textAlign: 'left',
-    alignItems: 'center'
+    flexShrink: 1,
+    width: '100%'
   },
   articleTitle: {
+    width: '100%',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5
+  },
+  articleDate: {
     fontSize: 16,
-    fontWeight: 'bold'
+    textAlign: 'left'
   },
   fixedHeader: {
     width: '100%',
@@ -97,6 +139,17 @@ const styles = StyleSheet.create({
   articleWrap: {
     padding: 15,
     flex: 1
+  },
+  fullView: {
+    backgroundColor: 'rgba(255,255,255,0.95)',
+    width: '100%',
+    height: '100%',
+    padding: 15
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 0
   }
 });
 
