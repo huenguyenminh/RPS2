@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, TouchableHighlight, Image, SafeAreaView, StatusBar, FlatList} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import { Dimensions, View, Text, StyleSheet, Modal, TouchableOpacity, TouchableHighlight, Image, SafeAreaView, StatusBar, FlatList} from 'react-native';
 import { formatDistanceToNow, parseISO} from 'date-fns'
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -25,20 +25,81 @@ const ArticleScreen = ({ navigation }) => {
     {id: '12', title: 'Man Sentenced to Life Over Theft of Hedge Clippers Is Granted Parole', lead: 'President Trump has called Joe Biden a tool of leftist agitators. Friends say that has never much been his way, even as a young man surrounded by protest.', imgLink: 'https://static01.nyt.com/images/2020/09/18/us/politics/00young-biden/00young-biden-threeByTwoLargeAt2X.jpg?quality=75&auto=webp&disable=upscale&width=600', publicDate:'2020-06-18'},
   ];
   const [modalVisible, setModalVisible] = useState(false);
+  const [h, setH] = React.useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [pageApi, setPageApi] = useState(2);
+  
 
-  const renderItem = ({ item }) => (
-    <View key={item.id} style={styles.article}>
+  const headerFlatList = () =>{ 
+    
+    const screenWidth = Dimensions.get("window").width;
+    const firstImg = 'https://static01.nyt.com/images/2020/09/18/us/politics/00young-biden/00young-biden-threeByTwoLargeAt2X.jpg?quality=75&auto=webp&disable=upscale&width=600';
+    Image.getSize(firstImg,(width, height) => {
+          const wFirstImg = width;
+          const hFirstImg = height;
+          const heightImage = (screenWidth / wFirstImg) * hFirstImg;
+          setH(heightImage);
+      }
+    ); 
+    // const heightImage = (screenWidth / wFirstImg) * hFirstImg;
+
+    return <View style={styles.article}>
       <TouchableOpacity 
-        onPress={() => {
-          setModalVisible(true);
-        }}
-        style={styles.articleTouch}>
+        // onPress={() => {
+        //   setModalVisible(true);
+        // }}
+        style={styles.firstArticle}>
           <Image 
-            style={styles.Img} 
-            source={{uri: item.imgLink,}} />
+            style={[styles.ImgFirstArtilce, {height: h}]} 
+            source={{uri: firstImg}} />
           <View style={styles.articleInfo}>
+            <Text style={styles.articleTitle} multiline={true}>The Greats: Sigourney Weaver Goes Her Own Way</Text>
+            <Text style={styles.article} multiline={true}>4 hours ago</Text>
+          </View>
+        </TouchableOpacity>
+    </View>
+  }
+  
+
+  useEffect( () => {
+    try{
+      const fetchData = async () => {
+        setIsLoading(true);
+        const url =  `https://newsapi.org/v2/top-headlines?sources=bbc-news,cbc-news,nbc-news,fox-news,mtv-news=&page=1&pageSize=10&apiKey=cda1d088cd3446ccbc8ef461840972b6&page=${pageApi}`;
+        const response = await fetch(url);
+        const jsonData = await response.json();
+        // setPageApi = (() => pageApi + 1);
+        setData(jsonData.articles);
+        // console.log(jsonData.articles);
+        setIsLoading(false);
+      };
+      fetchData();
+    } catch (err){
+      setErrorMessage(err.message);
+    }
+    
+  }, []);
+  
+
+  const renderItem = ({item}) => (
+    <View key={item.title} style={styles.article}>
+      <TouchableOpacity 
+        // onPress={() => {
+        //   setModalVisible(true);
+        // }}
+        style={styles.articleTouch}>
+          {item.urlToImage 
+          ? <Image 
+            style={styles.Img} 
+            source={{uri: item.urlToImage,}} />
+          : null}
+          
+          <View style={styles.articleInfo}>
+            
             <Text style={styles.articleTitle} multiline={true}>{item.title}</Text>
-            <Text style={styles.article} multiline={true}>{formatDistanceToNow(new Date(parseISO(item.publicDate)))} ago</Text>
+            {/* <Text style={styles.article} multiline={true}>{formatDistanceToNow(new Date(parseISO(item.publishedAt)))} ago</Text> */}
           </View>
         </TouchableOpacity>
     </View>
@@ -50,11 +111,12 @@ const ArticleScreen = ({ navigation }) => {
         <View style={styles.articleWrap}>
           <Text style={styles.h1}>nytimes</Text> 
           <FlatList
-                data={articles}
+                data={data}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
+                // ListHeaderComponent={headerFlatList}
+                ListFooterComponent ={isLoading ? <Text>Loading...</Text> : null}
               />
-          
         </View>
         {/* Modal */}
         <Modal
@@ -106,15 +168,24 @@ const styles = StyleSheet.create({
     width: '100%',
     
   },
+  firstArticle: {
+    width: '100%',
+  },
   articleTouch: {
     width: '100%',
     flexDirection: 'row',
+  },
+  ImgFirstArtilce: {
+    width: '100%',
+    marginBottom: 10,
+    borderRadius: 5
   },
   Img: {
     width: '40%',
     height: 120,
     marginRight: 15,
-    borderRadius: 5
+    borderRadius: 5,
+    backgroundColor: '#dadada'
   },
   articleInfo: {
     textAlign: 'left',

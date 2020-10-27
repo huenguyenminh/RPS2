@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 
 import {
@@ -12,7 +13,7 @@ import {
 
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import * as PublicConst from './Components/RpsComponents/Config';
-import { NavigationContainer } from '@react-navigation/native';
+
 import HomeScreen from './screen/HomeScreen';
 import ArticleScreen from './screen/ArticleScreen';
 
