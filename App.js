@@ -16,14 +16,16 @@ import * as PublicConst from './Components/RpsComponents/Config';
 
 import HomeScreen from './screen/HomeScreen';
 import ArticleScreen from './screen/ArticleScreen';
+import StopWatchScreen from './screen/StopWatchScreen';
 
 const {Navigator, Screen} = createStackNavigator();
 const App = () => {
   return(
     <NavigationContainer>
-      <Navigator initialRouteName={Navigator.app} headerMode="none">
+      <Navigator initialRouteName={'stopWatch'} headerMode="none">
         <Screen name={'app'} component={HomeScreen} initialParams={{}} />
         <Screen name={'article'} component={ArticleScreen} initialParams={{}} />
+        <Screen name={'stopWatch'} component={StopWatchScreen} initialParams={{}} />
       </Navigator>
     </NavigationContainer>
   );
